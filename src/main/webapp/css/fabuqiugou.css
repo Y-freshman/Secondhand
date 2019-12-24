@@ -1,0 +1,39 @@
+@CHARSET "UTF-8";
+.fbqg_bt{
+	color: transparent;
+	background-color : #333;
+	text-shadow : rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;
+	-webkit-background-clip : text;
+	font-size: 27px;
+	font-weight: 600;
+	font-family: '宋体';
+}
+.fbqg_tjtp{
+	float: left;
+	width: 8%;
+	height: 70px;
+	background-color: #fff;
+	text-align: center;
+	cursor: pointer;
+}
+.fbqg_tpsc{
+	position:relative;
+	width:100%;
+	background-color: rgba(0,0,0,0.5);
+	text-align: center;
+	cursor: pointer;
+	opacity: 0;
+	z-index: 3;
+	
+}
+.fbqg_tpsc:hover{
+	opacity: 1;
+	
+}
+.fbqg_tjtp:hover{
+	box-shadow: 1px 1px 3px #ccc;
+}
+.el-icon-plus:before {
+    content: "\e6d9";
+    line-height: 140px;
+}

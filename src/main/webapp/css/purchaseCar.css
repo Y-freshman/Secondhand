@@ -1,0 +1,67 @@
+@CHARSET "UTF-8";
+
+.el-header, .el-footer {
+	/*background-color: #B3C0D1;
+	color: #333;
+	text-align: center;
+	line-height: 60px;*/
+}
+
+#purchaseCar{
+	width: 1020px;
+	margin: 0 auto;
+}
+
+.el-checkbox__inner {
+	border: 1px solid #66b1ff;
+}
+
+.el-table--enable-row-transition .el-table__body td {
+    border-top: 1px solid #66b1ff;
+}
+
+.head_pic {
+	max-width: 120px;
+	max-height: 80px;
+}
+
+.grid-content .el-link,.size {
+	border-radius: 4px;
+	min-height: 36px;
+	padding-right: 20px;
+	font-size: 12px;
+}
+
+.gd_num{
+	font-size: 18px;
+    font-weight: 600;
+    color: #607D8B;
+}
+.gd_mdfy_size{
+	float: right;
+	margin-top: 6px;
+	color:chocolate;
+}
+/* .grid-content :hover{
+  	cursor: pointer;
+  	corlor: light-blue;
+  } */
+.purchaseCar_sum{
+	color: #2196F3;
+	font-size: 18px;
+	font-weight: 600;
+}
+.purchaseCar_price{
+	font-size: 18px;
+	font-weight: 600;
+}
+.purchase_submit{
+	width: 100%;
+	background-color: #e5e5e5;
+}
+.el-table .cell {
+    text-align: center;
+}
+#purchaseCar .el-dialog__header {
+    text-align: center;
+}

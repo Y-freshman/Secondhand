@@ -1,0 +1,88 @@
+@CHARSET "UTF-8";
+
+.gd_main .el-header, .el-footer {
+	background-color: #B3C0D1;
+	color: #333;
+	text-align: center;
+	line-height: 60px;
+}
+
+.el-breadcrumb {
+	width: 1020px;
+	display: block;
+	margin: 20px auto;
+	font-size: 18px;
+}
+
+.gd_main {
+	width: 1020px;
+	display: block;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.gd_main .el-aside img {
+	/*width: 400px;
+	height: 400px;
+	object-fit: cover;*/
+}
+
+.gd_main .el-aside .el-row {
+	margin-bottom: 20px;
+	&:
+	last-child
+	{
+	margin-bottom
+	:
+	0;
+}
+
+}
+.gd_main .el-aside  .el-col {
+	border-radius: 4px;
+}
+
+.gd_main .el-aside  .bg-purple {
+	background: #d3dce6;
+}
+
+.gd_main .el-aside  .grid-content {
+	border-radius: 4px;
+	min-height: 36px;
+}
+.gd_main .el-aside  .grid-content img{
+	width: 80px;
+	height: 80px;
+	margin: 19px;
+	object-fit: cover;
+}
+.gd_main .gd_detail_item{
+	color: #6D4C41;
+    font-weight: 600;
+    font-size: 15px;
+}
+.gd_main .item_info{
+	color:#584842;
+}
+.gd_detail_price{
+	color:#3a8ee6;
+	font-size: 24px;
+	font-weight: 600;
+	padding: 0 25px;
+}
+.gd_detail_status, .gd_detail_address, .gd_detail_time, .gd_detail_people{
+	padding: 0 50px;
+}
+.gd_price{
+	line-height: 35px;
+}
+.gd_price s{
+	color: #999;
+}
+.gdNum{
+	height: 30px;
+	width:300px;
+	border-radius:5px;
+	margin-left: 15px;
+	border: 1px solid gray;
+}

@@ -1,0 +1,23 @@
+@CHARSET "UTF-8";
+.el-tabs--border-card>.el-tabs__content {
+    padding: 0px;
+}
+.qg_zkpl{
+	display: none;
+}
+.qg_card:hover .qg_plsl{
+	display: none !important;
+}
+.qg_card:hover .qg_zkpl{
+	display: block ;
+}
+.el-divider__text {
+    position: absolute;
+    background-color: #FFF;
+    padding: 0 20px;
+    color: #409eff;
+    font-size: 14px;
+}
+.el-image__error {
+    display: none;
+}

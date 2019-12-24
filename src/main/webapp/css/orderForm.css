@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+#orderForm{
+	width: 1020px;
+	margin: 0 auto;
+}
+/* 搜索按钮 */
+#orderForm .el-input-group__append {
+    border: 1px solid #66b1ff;
+    border-left: 0;
+    height: 39.5px;
+}
+/* #orderForm .el-input-group__append button.el-button{
+	border: 1px solid #66b1ff;   
+} */
+#orderForm .el-select .el-input {
+	width: 130px;
+}
+
+#orderForm .input-with-select .el-input-group__prepend {
+	background-color: #fff;
+	width: 30%;	
+}
+#orderForm .el-input-group {
+    width: 40%;
+    margin-bottom: 20px;
+}
+/* 搜索框 */
+#orderForm .el-input__inner {
+    border: 1px solid #66b1ff;
+}
+/* 复选框 */
+.el-checkbox__inner {
+	border: 1px solid #66b1ff;
+}
+
+.el-table--enable-row-transition .el-table__body td {
+    border-top: 1px solid #66b1ff;
+}
+
+.head_pic {
+	max-width: 120px;
+	max-height: 80px;
+	object-fit: cover;
+}
+.grid-content .el-link,.size {
+	border-radius: 4px;
+	min-height: 36px;
+	padding-right: 20px;
+	padding-top: 10px;
+	font-size: 12px;
+}
+.el-table .cell {
+    text-align: center;
+}

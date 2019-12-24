@@ -1,0 +1,61 @@
+@CHARSET "UTF-8";
+
+#selfInfo {
+	width: 1020px;
+	margin: 0 auto;
+}
+
+.selfInfo_title {
+	color: rgba(102, 102, 102, 0.66);
+	padding-left: 32px;
+	font-size: 16px;
+	font-weight: 300;
+}
+
+.selfInfo_title span {
+	color: rgb(215, 100, 100);
+	font-size: 20px;
+}
+
+#selfInfo .avatar-uploader .el-upload {
+	border: 1px dashed #4e9383;
+	border-radius: 6px;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+}
+
+#selfInfo .avatar-uploader .el-upload:hover {
+	border-color: #409EFF;
+}
+
+#selfInfo .avatar-uploader-icon {
+	font-size: 28px;
+	color: #8c939d;
+	width: 178px;
+	height: 178px;
+	line-height: 178px;
+	text-align: center;
+}
+#selfInfo .el-icon-plus:before {
+    content: "\e6d9";
+    line-height: 140px;
+}
+#selfInfo .avatar {
+	width: 178px;
+	height: 178px;
+	display: block;
+}
+
+#selfInfo  .el-input__inner {
+	border: 1px solid #4e93839e;
+}
+#selfInfo  .el-textarea__inner {
+	border: 1px solid #4e93839e;
+}
+#selfInfo .el-radio__inner {
+    border: 1px solid #4e9383;
+}
+#selfInfo .el-radio-group {
+    margin-top: 12px;
+}

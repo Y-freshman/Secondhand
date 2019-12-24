@@ -1,0 +1,121 @@
+[
+  {
+    "title": "控制台",
+    "href": "pages/console.html",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe654;",
+    "spread": true,
+    "isCheck": true
+  },
+  {
+    "title": "用户列表",
+    "href": "pages/member/user.html",
+    "icon": "&#xe66f;",
+    "spread": false
+  },
+  {
+    "title": "商品列表",
+    "icon": "&#xe62a;",
+    "spread": false,
+    "children": [
+      {
+        "title": "体育健身",
+        "href": "pages/goods/tiyu.html",
+        "fontFamily": "layui-icon",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "办公家居",
+        "href": "pages/goods/bangong.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "卫生洁具",
+        "href": "pages/goods/weisheng.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "妇女婴幼",
+        "href": "pages/goods/funv.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "文具图书",
+        "href": "pages/goods/wenju.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "服装首饰",
+        "href": "pages/goods/fuzhuang.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "生鲜食材",
+        "href": "pages/goods/shengxian.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "电子数码",
+        "href": "pages/goods/dianzi.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "title": "酒水零食",
+        "href": "pages/goods/jiushui.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      }
+    ]
+  },
+  {
+    "title": "订单列表",
+    "href": "pages/order/order.html",
+    "icon": "&#xe63c;",
+    "spread": false
+  },
+  {
+    "title": "留言列表",
+    "href": "pages/remain/remain.html",
+    "icon": "&#xe6b2;",
+    "spread": false
+  },
+  {
+    "title": "评论列表",
+    "href": "pages/comment/comment.html",
+    "icon": "&#xe63a;",
+    "spread": false
+  },
+  {
+    "title": "求购列表",
+    "href": "pages/need/need.html",
+    "icon": "&#xe705;",
+    "spread": false
+  },
+  {
+    "title": "轮播图列表",
+    "href": "pages/turn/turn.html",
+    "icon": "&#xe634;",
+    "spread": false
+  },
+  {
+    "title": "公告列表",
+    "href": "pages/notice/notice.html",
+    "icon": "&#xe667;",
+    "spread": false
+  },
+  {
+    "title": "关键字表",
+    "href": "pages/key/key.html",
+    "icon": "&#xe615;",
+    "spread": false
+  }
+]
+

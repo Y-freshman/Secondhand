@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+
+#messageRm{
+	width: 1020px;
+	margin: 0 auto;
+}
+#messageRm .el-row {
+    margin-bottom: 0px;
+    margin-top: 35px;
+}
+#messageRm .el-collapse-item__header {
+    height: 24px;
+    line-height: 24px;
+}
+#messageRm .el-collapse-item__content {
+    padding-bottom: 5px;
+}
+#messageRm .el-textarea__inner {
+    border: 1px solid #9ca9c8;
+} 
+#messageRm .el-divider {
+    background-color: #bfffff;
+}
+#messageRm .deleteSubItem{
+	color:red;
+}
+#messageRm .deleteSubItem:hover{
+	cursor:pointer;
+}

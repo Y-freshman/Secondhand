@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.schoolTao.dao.RemainMapper">
+  <resultMap id="BaseResultMap" type="com.schoolTao.pojo.Remain">
+    <id column="remain_id" jdbcType="INTEGER" property="remainId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="remain_content" jdbcType="VARCHAR" property="remainContent" />
+    <result column="remain_time" jdbcType="TIMESTAMP" property="remainTime" />
+    <result column="remain_to_id" jdbcType="INTEGER" property="remainToId" />
+    <result column="remian_last_id" jdbcType="INTEGER" property="remianLastId" />
+  </resultMap>
+  <resultMap id="BaseResultMapAndUser" type="com.schoolTao.dto.RemainDTO">
+    <id column="remain_id" jdbcType="INTEGER" property="remainId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_sex" jdbcType="CHAR" property="userSex" />
+    <result column="user_avater" jdbcType="VARCHAR" property="userAvater" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="remain_content" jdbcType="VARCHAR" property="remainContent" />
+    <result column="remain_time" jdbcType="TIMESTAMP" property="remainTime" />
+    <result column="remain_to_id" jdbcType="INTEGER" property="receicverId" />
+    <result column="remian_last_id" jdbcType="INTEGER" property="remianLastId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    remain_id, user_id, remain_content, remain_time, remain_to_id, remian_last_id
+  </sql>
+  <select id="selectByExample" parameterType="com.schoolTao.pojo.RemainExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from remain
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from remain
+    where remain_id = #{remainId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAndUser" parameterType="java.lang.Integer" resultMap="BaseResultMapAndUser">
+  	select * from remain left join user on remain.user_id = `user`.user_id 
+		where remain_to_id = #{receicverId,jdbcType=INTEGER} and remain.remian_last_id = 0
+		order by remain.remain_time DESC
+  </select>
+  <select id="getRemains" resultMap="BaseResultMapAndUser">
+  	select remain_id,`user`.user_name,remain_content,remain_time,remain_to_id,remian_last_id,
+  		(SELECT `user`.user_name FROM `user` WHERE `user`.user_id = remain.user_id) AS receiver 
+  		from remain left join user on remain.user_id = `user`.user_id 
+		LIMIT #{page,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+  </select>
+  <select id="selectAndUserSub" parameterType="java.lang.Integer" resultMap="BaseResultMapAndUser">
+  	select * from remain left join user on remain.user_id = `user`.user_id 
+		where remain.remian_last_id = #{remianLastId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from remain
+    where remain_id = #{remainId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.schoolTao.pojo.RemainExample">
+    delete from remain
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.schoolTao.pojo.Remain">
+    insert into remain (remain_id, user_id, remain_content, 
+      remain_time, remain_to_id, remian_last_id
+      )
+    values (#{remainId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{remainContent,jdbcType=VARCHAR}, 
+      #{remainTime,jdbcType=TIMESTAMP}, #{remainToId,jdbcType=INTEGER}, #{remianLastId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.schoolTao.pojo.Remain">
+    insert into remain
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="remainId != null">
+        remain_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="remainContent != null">
+        remain_content,
+      </if>
+      <if test="remainTime != null">
+        remain_time,
+      </if>
+      <if test="remainToId != null">
+        remain_to_id,
+      </if>
+      <if test="remianLastId != null">
+        remian_last_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="remainId != null">
+        #{remainId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="remainContent != null">
+        #{remainContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remainTime != null">
+        #{remainTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remainToId != null">
+        #{remainToId,jdbcType=INTEGER},
+      </if>
+      <if test="remianLastId != null">
+        #{remianLastId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.schoolTao.pojo.RemainExample" resultType="java.lang.Long">
+    select count(*) from remain
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update remain
+    <set>
+      <if test="record.remainId != null">
+        remain_id = #{record.remainId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.remainContent != null">
+        remain_content = #{record.remainContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remainTime != null">
+        remain_time = #{record.remainTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remainToId != null">
+        remain_to_id = #{record.remainToId,jdbcType=INTEGER},
+      </if>
+      <if test="record.remianLastId != null">
+        remian_last_id = #{record.remianLastId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update remain
+    set remain_id = #{record.remainId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      remain_content = #{record.remainContent,jdbcType=VARCHAR},
+      remain_time = #{record.remainTime,jdbcType=TIMESTAMP},
+      remain_to_id = #{record.remainToId,jdbcType=INTEGER},
+      remian_last_id = #{record.remianLastId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.schoolTao.pojo.Remain">
+    update remain
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="remainContent != null">
+        remain_content = #{remainContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remainTime != null">
+        remain_time = #{remainTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remainToId != null">
+        remain_to_id = #{remainToId,jdbcType=INTEGER},
+      </if>
+      <if test="remianLastId != null">
+        remian_last_id = #{remianLastId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where remain_id = #{remainId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.schoolTao.pojo.Remain">
+    update remain
+    set user_id = #{userId,jdbcType=INTEGER},
+      remain_content = #{remainContent,jdbcType=VARCHAR},
+      remain_time = #{remainTime,jdbcType=TIMESTAMP},
+      remain_to_id = #{remainToId,jdbcType=INTEGER},
+      remian_last_id = #{remianLastId,jdbcType=INTEGER}
+    where remain_id = #{remainId,jdbcType=INTEGER}
+  </update>
+</mapper>

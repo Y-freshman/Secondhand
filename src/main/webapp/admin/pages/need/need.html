@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>求购列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<!--模糊搜索区域-->
+	<!-- <div class="layui-row">
+		<form class="layui-form layui-col-md12 ok-search">
+			<input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+			<input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+			<input class="layui-input" placeholder="账号" autocomplete="off" name="username">
+			<button class="layui-btn" lay-submit="" lay-filter="search">
+				<i class="layui-icon">&#xe615;</i>
+			</button>
+		</form>
+	</div> -->
+	<!--数据表格-->
+	<table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "jquery", "table", "form", "laydate", "okLayer", "okUtils", "okMock","util"], function () {
+		let table = layui.table;
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let okLayer = layui.okLayer;
+		let layer = layui.layer;
+		let okUtils = layui.okUtils;
+		let okMock = layui.okMock;
+		let util = layui.util;
+		let $ = layui.jquery;
+
+		laydate.render({elem: "#startTime", type: "datetime"});
+		laydate.render({elem: "#endTime", type: "datetime"});
+		okLoading.close($);
+		let userTable = table.render({
+			elem: '#tableId',
+			url: '/home/need/getNeed.do',
+			response: {
+			    countName: 'total' //规定数据总数的字段名称，默认：count
+			  } ,
+			limit: 7,
+			limits: [7,14,21],
+			page: true,
+			toolbar: true,
+			toolbar: "#toolbarTpl",
+			size: "lg",
+			skin: 'line',
+			cols: [[
+				{type: "checkbox", fixed: "left"},
+				{field: "needId", title: "ID", width: 60, sort: true},
+				{field: "userId", title: "用户ID", width: 100, align: "center",},
+				{field: "needContent", title: "求购内容", width: 300, },
+				{field: "needPics", title: "求购图片", width: 180, templet: "#avaterTpl"},
+				{field: "needViewNum", title: "浏览数量", width: 100, align: "center", },
+				{field: "needCommentNum", title: "评论数量", width: 100, align: "center", },
+				{field: "needTime", title: "发布时间", width: 180, align: "center",templet:function(d){return util.toDateString(d.userRegisterTime, "yyyy-MM-dd HH:mm:ss");}},
+				{title: "操作", width: 80, align: "center", fixed: "right", templet: "#operationTpl"}
+			]],
+			done: function (res, curr, count) {
+				console.info(res, curr, count);
+			}
+		});
+
+		form.on("submit(search)", function (data) {
+			userTable.reload({
+				where: data.field,
+				page: {curr: 1}
+			});
+			return false;
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
+			var commentLists = [];
+			for(var i=0; i<data.length; i++){
+				commentLists.push(data[i].needId);//
+			}
+			switch (obj.event) {
+				case "batchEnabled":
+					batchEnabled();
+					break;
+				case "batchDisabled":
+					batchDisabled();
+					break;
+				case "batchDel":
+					//batchDel();
+					batchDelComment(commentLists);
+					userTable.reload({
+						where: data.field,
+						page: {curr: 1}
+					});
+					break;
+				case "add":
+					add();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			if(obj.event === 'del'){
+		      layer.confirm('真的删除行么', function(index){
+		        obj.del();
+		        deleteComment(data.needId)//
+		        layer.close(index);
+		      });
+		    } else if(obj.event === 'edit'){
+		      layer.alert('编辑行：<br>'+ JSON.stringify(data))
+		    }
+			
+			
+		});
+
+		
+		
+
+		function batchDelComment(commentLists){
+			layer.confirm('确定要批量删除吗？', function(index){
+				$.ajax({
+					  url: "/home/need/batchDelNeed.do",//
+					  async: false,
+					  type: "post",
+					  data: JSON.stringify({
+						  needLists: commentLists//
+					  }),
+					  contentType: "application/json",
+					  dataType: 'json',
+					  success: function(data){
+						  location.reload();
+		            }
+				})
+				layer.close(index);
+			})
+		}
+		
+	
+		function deleteComment(needId){//
+			$.ajax({
+				  url: "/home/need/deleteNeed.do",//
+				  async: false,
+				  type: "post",
+				  data: JSON.stringify({
+					  idsStr: needId//
+				  }),
+				  contentType: "application/json",
+				  dataType: 'json',
+				  success: function(data){
+		              //console.log(vm.cartGds);
+	            }
+			  })
+		}
+
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+
+		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDel">批量删除</button>
+
+	</div>
+</script>
+<!-- 行工具栏模板 -->
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+<script type="text/html" id="avaterTpl">
+	<img src="{{d.needPics.split(',')[0]}}">
+</script>
+</body>
+</html>

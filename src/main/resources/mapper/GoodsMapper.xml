@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.schoolTao.dao.GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.schoolTao.pojo.Goods">
+    <id column="goods_id" jdbcType="INTEGER" property="goodsId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="goods_old_price" jdbcType="INTEGER" property="goodsOldPrice" />
+    <result column="goods_new_price" jdbcType="INTEGER" property="goodsNewPrice" />
+    <result column="goods_fresh" jdbcType="TINYINT" property="goodsFresh" />
+    <result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
+    <result column="goods_user_phone" jdbcType="VARCHAR" property="goodsUserPhone" />
+    <result column="goods_user_name" jdbcType="VARCHAR" property="goodsUserName" />
+    <result column="goods_pics" jdbcType="VARCHAR" property="goodsPics" />
+    <result column="goods_type" jdbcType="VARCHAR" property="goodsType" />
+    <result column="goods_time" jdbcType="TIMESTAMP" property="goodsTime" />
+    <result column="goods_state" jdbcType="CHAR" property="goodsState" />
+    <result column="goods_view_num" jdbcType="INTEGER" property="goodsViewNum" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    goods_id, user_id, goods_name, goods_old_price, goods_new_price, goods_fresh, goods_num, 
+    goods_user_phone, goods_user_name, goods_pics, goods_type, goods_time, goods_state, 
+    goods_view_num
+  </sql>
+  <select id="selectByExample" parameterType="com.schoolTao.pojo.GoodsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from goods
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+   <select id="selectByMayLike" parameterType="com.schoolTao.pojo.GoodsExample" resultMap="BaseResultMap">
+    select * from goods  ORDER BY RAND() LIMIT 6
+  </select>
+   <select id="selectByUserId" parameterType="com.schoolTao.pojo.GoodsExample" resultMap="BaseResultMap">
+    select * from goods where goods.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByView" parameterType="com.schoolTao.pojo.GoodsExample" resultMap="BaseResultMap">
+    select * from goods ORDER BY goods.goods_view_num DESC LIMIT 0,8
+  </select>
+  <select id="selectByView2" parameterType="com.schoolTao.pojo.GoodsExample" resultMap="BaseResultMap">
+    select * from goods ORDER BY goods.goods_view_num DESC 
+  </select>
+  <select id="selectByView3"  resultType="com.schoolTao.dto.Console">
+    SELECT goods_type as goodsType,count(*)as num FROM `goods` group by goods_type
+  </select>
+  <select id="selectByType" parameterType="com.schoolTao.pojo.Goods" resultMap="BaseResultMap">
+    select * from goods where goods.goods_type = #{goodsType,jdbcType=VARCHAR} ORDER BY goods.goods_id DESC LIMIT 0,8
+  </select>
+  <select id="selectByType2" parameterType="com.schoolTao.pojo.Goods" resultMap="BaseResultMap">
+    select * from goods where goods.goods_type = #{goodsType,jdbcType=VARCHAR} ORDER BY goods.goods_id DESC 
+  </select>
+  <select id="selectByName" parameterType="com.schoolTao.pojo.Goods" resultMap="BaseResultMap">
+    select * from goods where goods.goods_name like '%${goodsName}%'  ORDER BY goods.goods_id DESC 
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select                          
+    <include refid="Base_Column_List" />
+    from goods
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </select>
+  <select id="getGoods" resultMap="BaseResultMap">
+    select                          
+    <include refid="Base_Column_List" />
+    from goods where goods_type=#{goodsType,jdbcType=VARCHAR}
+    LIMIT #{page,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from goods
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.schoolTao.pojo.GoodsExample">
+    delete from goods
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.schoolTao.pojo.Goods">
+    insert into goods (goods_id, user_id, goods_name, 
+      goods_old_price, goods_new_price, goods_fresh, 
+      goods_num, goods_user_phone, goods_user_name, 
+      goods_pics, goods_type, goods_time, 
+      goods_state, goods_view_num)
+    values (#{goodsId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{goodsName,jdbcType=VARCHAR}, 
+      #{goodsOldPrice,jdbcType=INTEGER}, #{goodsNewPrice,jdbcType=INTEGER}, #{goodsFresh,jdbcType=TINYINT}, 
+      #{goodsNum,jdbcType=INTEGER}, #{goodsUserPhone,jdbcType=VARCHAR}, #{goodsUserName,jdbcType=VARCHAR}, 
+      #{goodsPics,jdbcType=VARCHAR}, #{goodsType,jdbcType=VARCHAR}, #{goodsTime,jdbcType=TIMESTAMP}, 
+      #{goodsState,jdbcType=CHAR}, #{goodsViewNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.schoolTao.pojo.Goods">
+    insert into goods
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        goods_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="goodsName != null">
+        goods_name,
+      </if>
+      <if test="goodsOldPrice != null">
+        goods_old_price,
+      </if>
+      <if test="goodsNewPrice != null">
+        goods_new_price,
+      </if>
+      <if test="goodsFresh != null">
+        goods_fresh,
+      </if>
+      <if test="goodsNum != null">
+        goods_num,
+      </if>
+      <if test="goodsUserPhone != null">
+        goods_user_phone,
+      </if>
+      <if test="goodsUserName != null">
+        goods_user_name,
+      </if>
+      <if test="goodsPics != null">
+        goods_pics,
+      </if>
+      <if test="goodsType != null">
+        goods_type,
+      </if>
+      <if test="goodsTime != null">
+        goods_time,
+      </if>
+      <if test="goodsState != null">
+        goods_state,
+      </if>
+      <if test="goodsViewNum != null">
+        goods_view_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null">
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsOldPrice != null">
+        #{goodsOldPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNewPrice != null">
+        #{goodsNewPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsFresh != null">
+        #{goodsFresh,jdbcType=TINYINT},
+      </if>
+      <if test="goodsNum != null">
+        #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsUserPhone != null">
+        #{goodsUserPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsUserName != null">
+        #{goodsUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsPics != null">
+        #{goodsPics,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsType != null">
+        #{goodsType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsTime != null">
+        #{goodsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="goodsState != null">
+        #{goodsState,jdbcType=CHAR},
+      </if>
+      <if test="goodsViewNum != null">
+        #{goodsViewNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.schoolTao.pojo.GoodsExample" resultType="java.lang.Long">
+    select count(*) from goods
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update goods
+    <set>
+      <if test="record.goodsId != null">
+        goods_id = #{record.goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsName != null">
+        goods_name = #{record.goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsOldPrice != null">
+        goods_old_price = #{record.goodsOldPrice,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsNewPrice != null">
+        goods_new_price = #{record.goodsNewPrice,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsFresh != null">
+        goods_fresh = #{record.goodsFresh,jdbcType=TINYINT},
+      </if>
+      <if test="record.goodsNum != null">
+        goods_num = #{record.goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsUserPhone != null">
+        goods_user_phone = #{record.goodsUserPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsUserName != null">
+        goods_user_name = #{record.goodsUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsPics != null">
+        goods_pics = #{record.goodsPics,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsType != null">
+        goods_type = #{record.goodsType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsTime != null">
+        goods_time = #{record.goodsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.goodsState != null">
+        goods_state = #{record.goodsState,jdbcType=CHAR},
+      </if>
+      <if test="record.goodsViewNum != null">
+        goods_view_num = #{record.goodsViewNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update goods
+    set goods_id = #{record.goodsId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      goods_name = #{record.goodsName,jdbcType=VARCHAR},
+      goods_old_price = #{record.goodsOldPrice,jdbcType=INTEGER},
+      goods_new_price = #{record.goodsNewPrice,jdbcType=INTEGER},
+      goods_fresh = #{record.goodsFresh,jdbcType=TINYINT},
+      goods_num = #{record.goodsNum,jdbcType=INTEGER},
+      goods_user_phone = #{record.goodsUserPhone,jdbcType=VARCHAR},
+      goods_user_name = #{record.goodsUserName,jdbcType=VARCHAR},
+      goods_pics = #{record.goodsPics,jdbcType=VARCHAR},
+      goods_type = #{record.goodsType,jdbcType=VARCHAR},
+      goods_time = #{record.goodsTime,jdbcType=TIMESTAMP},
+      goods_state = #{record.goodsState,jdbcType=CHAR},
+      goods_view_num = #{record.goodsViewNum,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.schoolTao.pojo.Goods">
+    update goods
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null">
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsOldPrice != null">
+        goods_old_price = #{goodsOldPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNewPrice != null">
+        goods_new_price = #{goodsNewPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsFresh != null">
+        goods_fresh = #{goodsFresh,jdbcType=TINYINT},
+      </if>
+      <if test="goodsNum != null">
+        goods_num = #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsUserPhone != null">
+        goods_user_phone = #{goodsUserPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsUserName != null">
+        goods_user_name = #{goodsUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsPics != null">
+        goods_pics = #{goodsPics,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsType != null">
+        goods_type = #{goodsType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsTime != null">
+        goods_time = #{goodsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="goodsState != null">
+        goods_state = #{goodsState,jdbcType=CHAR},
+      </if>
+      <if test="goodsViewNum != null">
+        goods_view_num = #{goodsViewNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.schoolTao.pojo.Goods">
+    update goods
+    set user_id = #{userId,jdbcType=INTEGER},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_old_price = #{goodsOldPrice,jdbcType=INTEGER},
+      goods_new_price = #{goodsNewPrice,jdbcType=INTEGER},
+      goods_fresh = #{goodsFresh,jdbcType=TINYINT},
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      goods_user_phone = #{goodsUserPhone,jdbcType=VARCHAR},
+      goods_user_name = #{goodsUserName,jdbcType=VARCHAR},
+      goods_pics = #{goodsPics,jdbcType=VARCHAR},
+      goods_type = #{goodsType,jdbcType=VARCHAR},
+      goods_time = #{goodsTime,jdbcType=TIMESTAMP},
+      goods_state = #{goodsState,jdbcType=CHAR},
+      goods_view_num = #{goodsViewNum,jdbcType=INTEGER}
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+  <update id="incView" parameterType="java.lang.Integer">
+    update goods
+    set goods_view_num = goods_view_num + 1
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+</mapper>

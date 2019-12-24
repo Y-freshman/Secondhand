@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>用户列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<!--数据表格-->
+	<table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "jquery", "table", "form", "laydate", "okLayer", "okUtils", "okMock","util"], function () {
+		let table = layui.table;
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let okLayer = layui.okLayer;
+		let layer = layui.layer;
+		let okUtils = layui.okUtils;
+		let okMock = layui.okMock;
+		let util = layui.util;
+		let $ = layui.jquery;
+
+		laydate.render({elem: "#startTime", type: "datetime"});
+		laydate.render({elem: "#endTime", type: "datetime"});
+		okLoading.close($);
+		
+		let userTable = table.render({
+			elem: '#tableId',
+			url: '/home/gdsDetails/getGoods.do?goodsType=服装首饰',
+			response: {
+			    countName: 'total' //规定数据总数的字段名称，默认：count
+			  } ,
+			limit: 7,
+			limits: [7,14,21],
+			page: true,
+			toolbar: true,
+			toolbar: "#toolbarTpl",
+			size: "lg",
+			skin: 'line',
+			cols: [[
+				{type: "checkbox", fixed: "left"},
+				{field: "goodsId", title: "ID", width: 60, sort: true},
+				{field: "goodsName", title: "商品名称", width: 150, align: "center"},
+				{field: "goodsPics", title: "商品图片", width: 150, align: "center",templet: "#picTpl"},
+				{field: "goodsOldPrice", title: "原价", width: 100, align: "center", templet: "#goodsOldPriceTpl"},
+				{field: "goodsNewPrice", title: "现价", width: 100, align: "center", templet: "#goodsNewPriceTpl"},
+				{field: "goodsFresh", title: "新旧", width: 80, align: "center", templet: "#goodsFreshTpl"},
+				{field: "goodsNum", title: "数量", width: 60, align: "center",},
+				{field: "goodsUserPhone", title: "卖家电话", width: 120, align: "center"},
+				{field: "goodsUserName", title: "卖家称呼", width: 120, align: "center"},
+				{field: "goodsTime", title: "上架时间", width: 180, align: "center",templet:function(d){return util.toDateString(d.goodsTime, "yyyy-MM-dd HH:mm:ss");}},
+				{field: "goodsState", title: "目前状态", width: 120, align: "center", templet: "#goodsStateTpl"},
+				{title: "操作", width: 80, align: "center", fixed: "right", templet: "#operationTpl"}
+			]],
+			done: function (res, curr, count) {
+				console.info(res, curr, count);
+			}
+		});
+
+		form.on("submit(search)", function (data) {
+			userTable.reload({
+				where: data.field,
+				page: {curr: 1}
+			});
+			return false;
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
+			var gdLists = [];
+			for(var i=0; i<data.length; i++){
+				gdLists.push(data[i].goodsId);
+			}
+			switch (obj.event) {
+				case "batchEnabled":
+					batchEnabled();
+					break;
+				case "batchDisabled":
+					batchDisabled();
+					break;
+				case "batchDel":
+					//batchDel();
+					batchDelGoods(gdLists);
+					userTable.reload({
+						where: data.field,
+						page: {curr: 1}
+					});
+					break;
+				case "add":
+					addGoods();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			if(obj.event === 'del'){
+		      layer.confirm('真的删除该商品么', function(index){
+		        obj.del();
+		        deleteGood(data.goodsId)
+		        layer.close(index);
+		      });
+		    } else if(obj.event === 'edit'){
+		      layer.alert('编辑行：<br>'+ JSON.stringify(data))
+		    }
+			console.log(data.goodsId);
+			/* switch (obj.event) {
+				case "edit":
+					edit(data);
+					break;
+				case "del":
+					del(data.userId);
+					console.log(data.userId);
+					break;
+			} */
+		});
+
+		function batchEnabled() {
+			okLayer.confirm("确定要批量启用吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/normalUser", "put", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function batchDisabled() {
+			okLayer.confirm("确定要批量停用吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/stopUser", "put", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function batchDelGoods(gdLists){
+			layer.confirm('真的删除这些商品么', function(index){
+				$.ajax({
+					  url: "/home/gdsDetails/batchDelGoods.do",
+					  async: false,
+					  type: "post",
+					  data: JSON.stringify({
+						  gdLists: gdLists
+					  }),
+					  contentType: "application/json",
+					  dataType: 'json',
+					  success: function(data){
+			              //console.log(vm.cartGds);
+		            }
+				})
+				layer.close(index);
+			})
+		}
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/deleteUser", "delete", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function addGoods() {
+			okLayer.open("添加商品", "goods-add.html", "90%", "90%", null, function () {
+				userTable.reload();
+			})
+		}
+
+		function edit(data) {
+			okLayer.open("更新用户", "user-edit.html", "90%", "90%", function (layero) {
+				let iframeWin = window[layero.find("iframe")[0]["name"]];
+				iframeWin.initForm(data);
+			}, function () {
+				userTable.reload();
+			})
+		}
+		
+		function deleteGood(goodsId){
+			$.ajax({
+				  url: "/home/gdsDetails/deleteGood.do",
+				  async: false,
+				  type: "post",
+				  data: JSON.stringify({
+					  goodsId: goodsId
+				  }),
+				  contentType: "application/json",
+				  dataType: 'json',
+				  success: function(data){
+		              //console.log(vm.cartGds);
+	            }
+			  })
+		}
+
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDel">批量删除</button>
+	</div>
+</script>
+<!-- 行工具栏模板 -->
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+<!-- 启用|停用模板 -->
+<script type="text/html" id="goodsStateTpl">
+	{{#  if(d.goodsState == 0){ }}
+	<span class="layui-btn layui-btn-danger layui-btn-xs">已下架</span>
+	{{#  } }}
+	{{#  if(d.goodsState == 1){ }}
+	<span class="layui-btn layui-btn-normal layui-btn-xs">正常售卖</span>
+	{{#  } }}
+</script>
+<script type="text/html" id="goodsFreshTpl">
+	{{#  if(d.goodsFresh == 1){ }}
+	<span class="layui-btn layui-btn layui-btn-xs">一成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 2) { }}
+	<span class="layui-btn layui-btn layui-btn-xs">二成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 3){ }}
+	<span class="layui-btn layui-btn layui-btn-xs">三成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 4){ }}
+	<span class="layui-btn layui-btn-normal layui-btn-xs">四成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 5){ }}
+	<span class="layui-btn layui-btn-normal layui-btn-xs">五成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 6){ }}
+	<span class="layui-btn layui-btn-normal layui-btn-xs">六成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 7){ }}
+	<span class="layui-btn layui-btn-warm layui-btn-xs">七成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 8){ }}
+	<span class="layui-btn layui-btn-warm layui-btn-xs">八成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 9){ }}
+	<span class="layui-btn layui-btn-warm layui-btn-xs">九成新</span>
+	{{#  } }}
+	{{#  if(d.goodsFresh == 10){ }}
+	<span class="layui-btn layui-btn-danger layui-btn-xs">全新</span>
+	{{#  } }}
+</script>
+<script type="text/html" id="avaterTpl">
+	<img src="{{d.userAvater}}">
+</script>
+<script type="text/html" id="goodsNewPriceTpl">
+	<span style="color:#ff5722;">￥{{d.goodsNewPrice}}</span>
+</script>
+<script type="text/html" id="goodsOldPriceTpl">
+	<span style="color:#1e9fffd4;">￥{{d.goodsOldPrice}}</span>
+</script>
+<script type="text/html" id="picTpl">
+	<img src="{{d.goodsPics.split(',')[0]}}">
+</script>
+</body>
+</html>

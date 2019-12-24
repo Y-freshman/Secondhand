@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.schoolTao.dao.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.schoolTao.pojo.Order">
+    <id column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+    <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="order_state" jdbcType="CHAR" property="orderState" />
+  </resultMap>
+  <resultMap id="BaseResultMapAndGoods" type="com.schoolTao.dto.OrderDTO">
+    <id column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+    <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="order_state" jdbcType="CHAR" property="orderState" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="goods_new_price" jdbcType="INTEGER" property="goodsNewPrice" />
+    <result column="goods_pics" jdbcType="VARCHAR" property="goodsPics" />
+    <result column="goods_user_name" jdbcType="VARCHAR" property="goodsUserName" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    order_id, user_id, goods_id, order_time, order_num, order_state
+  </sql>
+  <select id="selectByExample" parameterType="com.schoolTao.pojo.OrderExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByView3"  resultType="com.schoolTao.dto.Console">
+    SELECT order_time as orderTime,count(*)as num from `order` where date(order_time) &lt;= DATE_SUB(CURDATE(),INTERVAL 0 DAY) and date(order_time) &gt;= DATE_SUB(CURDATE(),INTERVAL 6 DAY) and order_state = "2" group by substring(order_time, 1, 10) ORDER BY order_time DESC
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from order
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </select>
+  <select id="getOrders" resultMap="BaseResultMapAndGoods">
+    select goods_pics,goods_name,order_time,order_num,goods_new_price,order_state,order.goods_id,order_id,goods_user_name 
+		from `order` left join goods on `order`.goods_id = goods.goods_id
+    	LIMIT #{page,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+  </select>
+  <select id="selectAndGoods" parameterType="java.lang.Integer" resultMap="BaseResultMapAndGoods">
+    select goods_pics,goods_name,order_time,order_num,goods_new_price,order_state,order.goods_id,order_id,goods_user_name 
+		from `order` left join goods on `order`.goods_id = goods.goods_id
+		where `order`.user_id = #{userId,jdbcType=INTEGER} ORDER BY `order`.order_time DESC
+  </select>
+  <select id="selectAndGoodsNeed" resultMap="BaseResultMapAndGoods">
+    select goods_pics,goods_name,order_time,order_num,goods_new_price,order_state,order.goods_id,order_id,goods_user_name 
+		from `order` left join goods on `order`.goods_id = goods.goods_id
+		where `order`.user_id = #{userId,jdbcType=INTEGER} and `order`.order_state = #{orderState,jdbcType=CHAR}
+		ORDER BY `order`.order_time DESC
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from `order`
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.schoolTao.pojo.OrderExample">
+    delete from `order`
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.schoolTao.pojo.Order">
+    insert into `order` (order_id, user_id, goods_id, 
+      order_time, order_num, order_state
+      )
+    values (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{goodsId,jdbcType=INTEGER}, 
+      #{orderTime,jdbcType=TIMESTAMP}, #{orderNum,jdbcType=INTEGER}, #{orderState,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.schoolTao.pojo.Order">
+    insert into `order`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="goodsId != null">
+        goods_id,
+      </if>
+      <if test="orderTime != null">
+        order_time,
+      </if>
+      <if test="orderNum != null">
+        order_num,
+      </if>
+      <if test="orderState != null">
+        order_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="orderTime != null">
+        #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNum != null">
+        #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="orderState != null">
+        #{orderState,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+   <insert id="addOrders" parameterType="list">
+    INSERT into order
+    (user_id, goods_id, order_time, order_num, order_state) 
+    VALUES
+    <foreach collection="list" item="test" separator=",">
+        (#{test.userId},
+        #{test.goodsId},
+        #{test.orderTime},
+        #{test.orderNum},
+        #{test.orderState},
+    </foreach>
+  </insert>
+   <insert id="addOrder"  parameterType="com.schoolTao.pojo.Order">
+    INSERT into `order` values (#{orderId},#{userId},#{goodsId},#{orderTime},#{orderNum},#{orderState})
+  </insert>
+  <select id="countByExample" parameterType="com.schoolTao.pojo.OrderExample" resultType="java.lang.Long">
+    select count(*) from `order`
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update order
+    <set>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsId != null">
+        goods_id = #{record.goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderTime != null">
+        order_time = #{record.orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.orderNum != null">
+        order_num = #{record.orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderState != null">
+        order_state = #{record.orderState,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update order
+    set order_id = #{record.orderId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      goods_id = #{record.goodsId,jdbcType=INTEGER},
+      order_time = #{record.orderTime,jdbcType=TIMESTAMP},
+      order_num = #{record.orderNum,jdbcType=INTEGER},
+      order_state = #{record.orderState,jdbcType=CHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.schoolTao.pojo.Order">
+    update order
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="orderTime != null">
+        order_time = #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNum != null">
+        order_num = #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="orderState != null">
+        order_state = #{orderState,jdbcType=CHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.schoolTao.pojo.Order">
+    update order
+    set user_id = #{userId,jdbcType=INTEGER},
+      goods_id = #{goodsId,jdbcType=INTEGER},
+      order_time = #{orderTime,jdbcType=TIMESTAMP},
+      order_num = #{orderNum,jdbcType=INTEGER},
+      order_state = #{orderState,jdbcType=CHAR}
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </update>
+  <update id="updateConfirm" parameterType="java.lang.Integer">
+    UPDATE `order` SET order_state = '2' 
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </update>
+</mapper>

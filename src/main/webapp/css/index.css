@@ -1,0 +1,167 @@
+@CHARSET "UTF-8";
+body{
+	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+	background-color: #fff;
+	overflow-x: hidden;
+}
+.el-row {
+    margin-bottom: 20px;
+  }
+.shouye_tubiao{
+	width: 50px;
+	height: 50px;
+	float: left;
+	margin-left: 20px;
+    margin-top: 5px;
+}
+.shouye_tubiao2{
+	color: #1296db;
+	font-size: 14px;
+	font-weight: 600;
+	float: left;
+	margin-top: 18px;
+	cursor: pointer;
+}
+.shouye_db{
+	background-color: #eee;
+	margin-top:-10px;
+	color: #999;
+	margin-bottom: 0px;
+	height: 21px;
+    font-size: 14px;
+}
+.el-dropdown-menu__item {
+    list-style: none;
+    line-height: 36px;
+    padding: 0 20px;
+    margin: 0;
+    font-size: 14px;
+    color: #606266;
+    cursor: pointer;
+    outline: 0;
+    color: #fff;
+}
+.shouye_fl{
+	color: rgb(255, 255, 255);
+    background-color: rgb(64, 158, 255);
+    margin-top: 10px;
+    /* top: 10px; */
+    float: left;
+    width: 150px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+}
+.el-dropdown-menu__item--divided:before {
+    content: '';
+    height: 0px;
+    display: block;
+    margin: 0 -20px;
+    background-color: #FFF;
+}
+.el-card {
+    border: 1px solid #EBEEF5;
+    background-color: #FFF;
+    color: #303133;
+    -webkit-transition: .3s;
+    transition: .3s;
+    padding-bottom: 20px;
+}
+.shouye_zl{
+	border-bottom: 1px solid #666;
+	
+}
+.footer {
+	background: #fff;
+	font-size: 13px;
+}
+
+.footer .alt {
+	overflow: hidden;
+	padding: 20px 0;
+	width: 100%;
+	margin: auto;
+	text-align: center;
+}
+
+.footer .alt .foot {
+	width: 11%;
+	float: left;
+}
+
+.footer .alt .foot p {
+	color: #333;
+	line-height: 28px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.footer .alt .foot a {
+	color: #666;
+	display: block;
+	line-height: 24px;
+}
+
+.footer .alt .foot a:hover {
+	color: #3f51b5;
+}
+
+.footer .alt .foot img {
+	padding-top: 20px;
+}
+a {
+	text-decoration: none;
+}
+
+img {
+	border: none;
+}
+
+li {
+	list-style: none;
+}
+.hot_top_pchaseCar{
+	display: none;
+	
+}
+
+ .hot_top:hover .hot_top_viewNum{
+	display: none;
+}
+.hot_top:hover .hot_top_pchaseCar{
+	display: block;
+	
+}
+.qg_zkpl{
+	display: none;
+}
+.qg_card:hover .qg_plsl{
+	display: none !important;
+}
+.qg_card:hover .qg_zkpl{
+	display: block ;
+}
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box !important;
+}
+.truncate2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box !important;
+}
+.truncate3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    display: -webkit-box !important;
+}
+.el-image__error {
+    display: none;
+}

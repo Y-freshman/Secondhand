@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>用户列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<!--数据表格-->
+	<table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "jquery", "table", "form", "laydate", "okLayer", "okUtils", "okMock","util"], function () {
+		let table = layui.table;
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let okLayer = layui.okLayer;
+		let layer = layui.layer;
+		let okUtils = layui.okUtils;
+		let okMock = layui.okMock;
+		let util = layui.util;
+		let $ = layui.jquery;
+
+		laydate.render({elem: "#startTime", type: "datetime"});
+		laydate.render({elem: "#endTime", type: "datetime"});
+		okLoading.close($);
+		
+		let userTable = table.render({
+			elem: '#tableId',
+			url: '/home/order/getOrders.do',
+			response: {
+			    countName: 'total' //规定数据总数的字段名称，默认：count
+			  } ,
+			limit: 7,
+			limits: [7,14,21],
+			page: true,
+			toolbar: true,
+			toolbar: "#toolbarTpl",
+			size: "lg",
+			skin: 'line',
+			cols: [[
+				{type: "checkbox", fixed: "left"},
+				{field: "orderId", title: "ID", width: 60, sort: true},
+				{field: "goodsName", title: "商品名称", width: 220, align: "center"},
+				{field: "goodsNewPrice", title: "成交金额", width: 100, align: "center", templet: "#goodsNewPriceTpl"},
+				{field: "orderNum", title: "交易数量", width: 120, align: "center",},
+				{field: "goodsUserName", title: "卖家称呼", width: 120, align: "center"},
+				{field: "orderTime", title: "订单时间", width: 180, align: "center",templet:function(d){return util.toDateString(d.goodsTime, "yyyy-MM-dd HH:mm:ss");}},
+				{field: "orderState", title: "交易状态", width: 120, align: "center", templet: "#orderStateTpl"},
+				{title: "操作", width: 80, align: "center", fixed: "right", templet: "#operationTpl"}
+			]],
+			done: function (res, curr, count) {
+				console.info(res, curr, count);
+			}
+		});
+
+		form.on("submit(search)", function (data) {
+			userTable.reload({
+				where: data.field,
+				page: {curr: 1}
+			});
+			return false;
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
+			var orderList = [];
+			for(var i=0; i<data.length; i++){
+				orderList.push(data[i].orderId);
+			}
+			switch (obj.event) {
+				case "batchEnabled":
+					batchEnabled();
+					break;
+				case "batchDisabled":
+					batchDisabled();
+					break;
+				case "batchDel":
+					//batchDel();
+					batchDelOrders(orderList);
+					userTable.reload({
+						where: data.field,
+						page: {curr: 1}
+					});
+					break;
+				case "add":
+					addGoods();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			if(obj.event === 'del'){
+		      layer.confirm('真的删除该订单么', function(index){
+		        obj.del();
+		        deleteGood(data.orderId)
+		        layer.close(index);
+		      });
+		    } else if(obj.event === 'edit'){
+		      layer.alert('编辑行：<br>'+ JSON.stringify(data))
+		    }
+			console.log(data.orderId);
+			/* switch (obj.event) {
+				case "edit":
+					edit(data);
+					break;
+				case "del":
+					del(data.userId);
+					console.log(data.userId);
+					break;
+			} */
+		});
+
+		function batchEnabled() {
+			okLayer.confirm("确定要批量启用吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/normalUser", "put", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function batchDisabled() {
+			okLayer.confirm("确定要批量停用吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/stopUser", "put", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function batchDelOrders(orderList){
+			layer.confirm('真的删除这些订单么', function(index){
+				$.ajax({
+					  url: "/home/order/deleteOrders.do",
+					  async: false,
+					  type: "post",
+					  data: JSON.stringify({
+						  orderList: orderList
+					  }),
+					  contentType: "application/json",
+					  dataType: 'json',
+					  success: function(data){
+			              //console.log(vm.cartGds);
+		            }
+				})
+				layer.close(index);
+			})
+		}
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/user/deleteUser", "delete", {idsStr: idsStr}, true).done(function (response) {
+						console.log(response);
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function addGoods() {
+			okLayer.open("添加商品", "goods-add.html", "90%", "90%", null, function () {
+				userTable.reload();
+			})
+		}
+
+		function edit(data) {
+			okLayer.open("更新用户", "user-edit.html", "90%", "90%", function (layero) {
+				let iframeWin = window[layero.find("iframe")[0]["name"]];
+				iframeWin.initForm(data);
+			}, function () {
+				userTable.reload();
+			})
+		}
+		
+		function deleteGood(orderId){
+			$.ajax({
+				  url: "/home/order/deleteOrder.do",
+				  async: false,
+				  type: "post",
+				  data: JSON.stringify({
+					  orderId: orderId
+				  }),
+				  contentType: "application/json",
+				  dataType: 'json',
+				  success: function(data){
+		              //console.log(vm.cartGds);
+	            }
+			  })
+		}
+
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDel">批量删除</button>
+	</div>
+</script>
+<!-- 行工具栏模板 -->
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+<!-- 启用|停用模板 -->
+<script type="text/html" id="orderStateTpl">
+	{{#  if(d.orderState == 0){ }}
+	<span class="layui-btn layui-btn-danger layui-btn-xs">待付款</span>
+	{{#  } }}
+	{{#  if(d.orderState == 1){ }}
+	<span class="layui-btn layui-btn-normal layui-btn-xs">交易进行中</span>
+	{{#  } }}
+	{{#  if(d.orderState == 2){ }}
+	<span class="layui-btn layui-btn layui-btn-xs">交易完成</span>
+	{{#  } }}
+	{{#  if(d.orderState == 3){ }}
+	<span class="layui-btn layui-btn-warm layui-btn-xs">交易取消</span>
+	{{#  } }}
+</script>
+<script type="text/html" id="goodsNewPriceTpl">
+	<span style="color:#ff5722;">￥{{d.goodsNewPrice}}</span>
+</script>
+</body>
+</html>

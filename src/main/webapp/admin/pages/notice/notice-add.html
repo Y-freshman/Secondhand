@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>添加公告</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<link rel="stylesheet" href="../../../css/element.css">
+	<link rel="stylesheet" href="../../..//css/fabuqiugou.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+	
+</head>
+<body>
+<div id="fabu">
+		<el-container>
+		  <el-main style="background: linear-gradient(to bottom, #fff , #eee);min-height:400px;padding-top: 0px;">
+		  	<el-row :gutter="20" style="margin-top:40px">
+			  <el-col :span="22" :offset="1" >
+			  	<span style="color: #666;font-size: 16px;font-weight: 600">公告内容：</span>
+			  </el-col>
+			</el-row>
+		  	<el-row :gutter="20" >
+			  <el-col :span="22" :offset="1" style="text-align:center">
+			  	<el-input
+				  type="textarea"
+				  :autosize="{ minRows: 6}"
+				  placeholder="在这里输入..."
+				  v-model="text"
+				  maxlength="255"
+  				show-word-limit>
+				</el-input>
+			  </el-col>
+			</el-row>
+
+		  	<el-row :gutter="20" style="margin-top:40px">
+			  <el-col :span="2" :offset="11" style="text-align:center">
+			  	<el-button type="primary" icon="el-icon-position" @click="fabu()" >发布公告</el-button>
+			  </el-col>
+			</el-row>
+		  	
+		  </el-main>
+		</el-container>
+	</div>
+<!--js逻辑-->
+<script src="../../../js/vue.js"></script>
+<script src="../../../js/element.js"></script>
+<script src="../../../js/jquery.min.js"></script>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let okLayer = layui.okLayer;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+	});
+	var vm = new Vue({
+		  el: '#fabu',
+		  data: {
+		      text:'',
+		      
+		  },
+		  methods: { 
+			  fabu: function () {
+				  if(vm.text.match(/^[ ]*$/)){
+					  this.$message.error('内容不能为空！');
+					  return false;
+				  }else{
+					  let that = this;
+					  $.ajax({
+				    		type: "post",
+				    		dataType:"json",
+				    		async:true,//同步异步
+				            contentType:"application/json", 
+				    		url: "/home/notice/insert.do",
+				    		data:  JSON.stringify({
+				    			"noticeContent":vm.text,
+				    		}), 
+				    		success: function(data) {
+				    			//console.log(data);
+			    				that.$message({message: '发布成功~',type: 'success'});
+			    				vm.text = "";
+			    				
+				    		},
+				    		error: function(){
+				    			that.$message.error('发布失败！');
+				    		}
+						});
+				  }
+				  
+			  },
+		      
+		  },
+		  filters: {
+			  
+		  },
+		  
+	});
+</script>
+</body>
+</html>

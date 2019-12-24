@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>添加用户</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<!--form表单-->
+	<form class="layui-form layui-form-pane ok-form">
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsName" placeholder="请输入商品名称" autocomplete="off" class="layui-input"
+				       lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">专柜价格</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsOldPrice" placeholder="请输入姓名" autocomplete="off" class="layui-input" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">现售价格</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsNewPrice" placeholder="请输入手机号码" autocomplete="off" class="layui-input"
+				       lay-verify="phone">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">折旧程度</label>
+			<div class="layui-input-block">
+				<select name="goodsFresh" lay-verify="">
+				<option value="">请选择折旧程度</option>
+				  <option value="011">一成新</option>
+				  <option value="022">二成新</option>
+				  <option value="033">三成新</option>
+				  <option value="044">四成新</option>
+				  <option value="055">五成新</option>
+				  <option value="066">六成新</option>
+				  <option value="077">七成新</option>
+				  <option value="088">八成新</option>
+				  <option value="099">九成新</option>
+				  <option value="100">全新</option>
+				</select> 
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品类别</label>
+			<div class="layui-input-block">
+				<select name="goodsType" lay-verify="">
+				  <option value="">请选择商品类别</option>
+				  <option value="010">体育健身</option>
+				  <option value="020">办公家园</option>
+				  <option value="030">卫生洁具</option>
+				  <option value="040">妇女婴幼</option>
+				  <option value="050">文具图书</option>
+				  <option value="060">服装首饰</option>
+				  <option value="070">生鲜食材</option>
+				  <option value="080">电子数码</option>
+				  <option value="090">酒水零食</option>
+				</select> 
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品图片上传</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsPics" placeholder="请选择出生日期 格式为yyyy-MM-dd HH:mm:ss" autocomplete="off"
+				       class="layui-input" id="birthday" lay-verify="birthdayVerify">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品数量</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsNum" placeholder="请输入商品名称" autocomplete="off" class="layui-input"
+				       lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">卖家姓名</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsUserName" placeholder="请输入商品名称" autocomplete="off" class="layui-input"
+				       lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">卖家号码</label>
+			<div class="layui-input-block">
+				<input type="text" name="goodsUserPhone" placeholder="请输入商品名称" autocomplete="off" class="layui-input"
+				       lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">立即发布</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let okLayer = layui.okLayer;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+		laydate.render({elem: "#birthday", type: "datetime"});
+
+		form.verify({
+			birthdayVerify: [/^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-))(\s(([01]\d{1})|(2[0123])):([0-5]\d):([0-5]\d))?$/, '日期格式不正确']
+		});
+
+		form.on("submit(add)", function (data) {
+			okUtils.ajax("/user/addUser", "post", data.field, true).done(function (response) {
+				console.log(response);
+				okLayer.greenTickMsg("添加成功", function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+			}).fail(function (error) {
+				console.log(error)
+			});
+			return false;
+		});
+	});
+</script>
+</body>
+</html>
